@@ -1,0 +1,40 @@
+{
+  "name": "@mewhhaha/eslint-plugin-simple-tailwind",
+  "version": "0.0.1",
+  "type": "module",
+  "description": "",
+  "scripts": {
+    "build": "tsc -p tsconfig.json && publint --strict",
+    "lint": "oxlint"
+  },
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/plugin.d.mts",
+        "default": "./dist/plugin.mjs"
+      }
+    }
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "packageManager": "pnpm@9.14.2+sha512.6e2baf77d06b9362294152c851c4f278ede37ab1eba3a55fda317a4a17b209f4dbb973fb250a77abc463a341fcb1f17f17cfa24091c4eb319cda0d9b84278387",
+  "dependencies": {
+    "enhanced-resolve": "^5.17.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.9.3",
+    "@typescript-eslint/utils": "^8.15.0",
+    "oxlint": "^0.13.1",
+    "prettier": "^3.3.3",
+    "publint": "^0.2.12",
+    "tailwindcss": "4.0.0-beta.2",
+    "typescript": "^5.7.2"
+  },
+  "peerDependencies": {
+    "tailwindcss": "4.0.0-beta.2"
+  }
+}
