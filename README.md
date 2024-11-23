@@ -13,7 +13,7 @@ pnpm add @mewhhaha/eslint-plugin-simple-tailwind
 ```mjs
 import setupPlugin from "@mewhhaha/eslint-plugin-simple-tailwind";
 
-const plugin = await setupPlugin("./path/to/tailwind.config.mjs");
+const plugin = await setupPlugin("./path/to/tailwind.css");
 
 export default [plugin.configs.recommended];
 ```
