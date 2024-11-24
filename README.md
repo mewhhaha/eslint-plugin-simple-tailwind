@@ -11,11 +11,12 @@ pnpm add @mewhhaha/eslint-plugin-simple-tailwind
 ## Usage
 
 ```mjs
-import setupPlugin from "@mewhhaha/eslint-plugin-simple-tailwind";
+import tseslint from "typescript-eslint";
+import plugin, { loadTailwind } from "@mewhhaha/eslint-plugin-simple-tailwind";
 
-const plugin = await setupPlugin("./path/to/tailwind.css");
+const tw = await loadTailwind("./path/to/tailwind.css");
 
-export default [plugin.configs.recommended];
+export default [plugin(tw).configs.recommended];
 ```
 
 ## Rules

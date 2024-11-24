@@ -39,5 +39,10 @@ export const loadTailwind = async (cssPath: string): Promise<tailwind> => {
     },
   });
 
-  return design;
+  // Re-stating these so we can pass the functions around without
+  // breaking the lack of "this" context in design
+  return {
+    getClassOrder: (values) => design.getClassOrder(values),
+    candidatesToCss: (values) => design.candidatesToCss(values),
+  };
 };

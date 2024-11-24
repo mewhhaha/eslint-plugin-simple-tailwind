@@ -1,29 +1,27 @@
 import multiline from "./rules/multiline.mjs";
 import duplicate from "./rules/duplicate.mjs";
-import { loadTailwind } from "./load-tailwind.mjs";
+import { loadTailwind, tailwind } from "./load-tailwind.mjs";
+
+export { loadTailwind };
 
 /**
  * This plugin relies on making an asynchronous call to read from the tailwind.css file.
  *
  * @example
  * ```ts
- * import asyncPlugin from "eslint-plugin-simple-tailwind";
+ * import tseslint from "typescript-eslint";
+ * import plugin, { loadTailwind } from "@mewhhaha/eslint-plugin-simple-tailwind";
  *
- * const plugin = await asyncPlugin("./path/to/tailwind.css");
+ * const tw = await loadTailwind("./path/to/tailwind.css");
  *
- * export default [plugin.configs.recommended]
+ * export default [plugin(tw).configs.recommended];
  * ```
  */
-export const asyncPlugin = async (cssPath: string) => {
-  const tw = await loadTailwind(cssPath);
+export const plugin = (tw: tailwind) => {
   const plugin = {
-    files: ["*.ts", "*.tsx", "*.mts", "*.cts"],
-    context: {
-      tw,
-    },
     rules: {
-      multiline: multiline(tw),
-      duplicate: duplicate(tw),
+      multiline: multiline,
+      duplicate: duplicate,
     },
   } as const;
 
@@ -38,6 +36,18 @@ export const asyncPlugin = async (cssPath: string) => {
 
   const configs = {
     recommended: {
+      files: [
+        "**/*.ts",
+        "**/*.tsx",
+        "**/*.mts",
+        "**/*.cts",
+        "**/*.js",
+        "**/*.jsx",
+      ],
+
+      settings: {
+        simpletailwindcss: tw,
+      },
       plugins: {
         [name]: plugin,
       },
@@ -51,4 +61,4 @@ export const asyncPlugin = async (cssPath: string) => {
   return { plugin, configs };
 };
 
-export default asyncPlugin;
+export default plugin;

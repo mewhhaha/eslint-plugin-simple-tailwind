@@ -1,75 +1,107 @@
 import { type RuleModule } from "@typescript-eslint/utils/ts-eslint";
 import { type TSESTree } from "@typescript-eslint/utils";
-import { tailwind } from "../load-tailwind.mjs";
+import { parseSettings } from "../utils/settings.js";
+import { invariant } from "../utils/invariant.js";
+import {
+  hasArguments,
+  hasTemplateLiteralExpression,
+  isAttribute,
+  isNamed,
+  isTemplateLiteral,
+} from "../utils/is.js";
 
 const messages = {
   duplicateClass:
     "Duplicate Tailwind class '{{className}}' found. Other occurrence: '{{original}}'",
 };
 
-const rule = (tw: tailwind): RuleModule<keyof typeof messages, []> => {
-  return {
-    meta: {
-      messages,
-      type: "problem",
-      schema: [],
-      docs: {
-        description:
-          "Rule for ensuring that there are no duplicate Tailwind utility classes with the same base.",
-      },
+const rule: RuleModule<keyof typeof messages, []> = {
+  meta: {
+    messages,
+    type: "problem",
+    schema: [],
+    docs: {
+      description:
+        "Rule for ensuring that there are no duplicate Tailwind utility classes with the same base.",
     },
-    defaultOptions: [],
-    create(context) {
-      const reportDuplicate = (
-        expression: TSESTree.TemplateLiteral,
-        text: string,
-        duplicate: `${string} ${string}`,
-      ) => {
-        const [a, b] = duplicate.split(" ");
-        context.report({
-          node: expression,
-          loc: {
-            start: {
-              line: expression.loc.start.line,
-              column: text.indexOf(a),
-            },
-            end: {
-              line: expression.loc.start.line,
-              column: text.indexOf(a) + a.length,
-            },
+  },
+  defaultOptions: [],
+  create(context) {
+    const settings = parseSettings(context);
+
+    const reportDuplicate = (
+      expression: TSESTree.TemplateLiteral,
+      text: string,
+      duplicate: `${string} ${string}`,
+    ) => {
+      const [a, b] = duplicate.split(" ");
+      context.report({
+        node: expression,
+        loc: {
+          start: {
+            line: expression.loc.start.line,
+            column: text.indexOf(a),
           },
-          messageId: "duplicateClass",
-          data: {
-            className: a,
-            original: b,
+          end: {
+            line: expression.loc.start.line,
+            column: text.indexOf(a) + a.length,
           },
-        });
-      };
+        },
+        messageId: "duplicateClass",
+        data: {
+          className: a,
+          original: b,
+        },
+      });
+    };
 
-      return {
-        JSXAttribute: function checkDuplicates(callExpression) {
-          if (callExpression.name.name !== "className") {
-            return;
-          }
-          const value = callExpression.value;
-          if (!value || value.type !== "JSXExpressionContainer") {
-            return;
-          }
+    return {
+      JSXAttribute: function checkDuplicates(jsxAttribute) {
+        try {
+          invariant(isAttribute(jsxAttribute, settings.attributes), "ignore");
+          invariant(hasTemplateLiteralExpression(jsxAttribute), "ignore");
 
-          const expression = value.expression;
-          if (expression.type !== "TemplateLiteral") {
-            return;
-          }
-          const text = expression.quasis[0].value.raw;
+          const expression = jsxAttribute.value.expression;
+          const quasis = expression.quasis;
+          const text = quasis[0].value.raw;
 
-          const duplicates = findDuplicates(text, tw.candidatesToCss);
+          const duplicates = findDuplicates(text, settings.candidatesToCss);
           for (const duplicate of duplicates) {
             reportDuplicate(expression, text, duplicate);
           }
-        },
-      };
-    },
-  };
+        } catch (error) {
+          if (error instanceof Error && error.message === "ignore") {
+            return;
+          }
+          throw error;
+        }
+      },
+      CallExpression: function formatMultilineCallExpression(callExpression) {
+        try {
+          invariant(isNamed(callExpression, settings.callees), "ignore");
+          invariant(hasArguments(callExpression), "ignore");
+
+          const args = callExpression.arguments.filter(isTemplateLiteral);
+
+          for (const arg of args) {
+            const quasis = arg.quasis;
+            const text = quasis[0].value.raw;
+
+            const duplicates = findDuplicates(text, settings.candidatesToCss);
+            for (const duplicate of duplicates) {
+              reportDuplicate(arg, text, duplicate);
+            }
+          }
+        } catch (error) {
+          if (error instanceof Error && error.message === "ignore") {
+            return;
+          }
+
+          throw error;
+        }
+      },
+    };
+  },
 };
 
 const findDuplicates = (
