@@ -65,10 +65,15 @@ const rule: RuleModule<keyof typeof messages, []> = {
       return sortedClasses;
     };
 
-    const checkFormatting = (arg: TSESTree.TemplateLiteral) => {
+    const checkFormatting = (
+      arg: TSESTree.TemplateLiteral,
+      align?: TSESTree.JSXAttribute,
+    ) => {
       const quasis = arg.quasis;
       const text = quasis[0].value.raw;
-      const indent = " ".repeat(arg.loc.start.column);
+      const indent = " ".repeat(
+        align ? align.loc.start.column : arg.loc.start.column,
+      );
 
       const classes = sortClasses(text);
       const nextText = formatText(classes, {
@@ -87,7 +92,7 @@ const rule: RuleModule<keyof typeof messages, []> = {
           invariant(isAttribute(jsxAttribute, settings.attributes), "ignore");
           invariant(hasTemplateLiteralExpression(jsxAttribute), "ignore");
 
-          checkFormatting(jsxAttribute.value.expression);
+          checkFormatting(jsxAttribute.value.expression, jsxAttribute);
         } catch (error) {
           if (error instanceof Error && error.message === "ignore") {
             return;
