@@ -9,6 +9,7 @@ import {
   isNamed,
   isTemplateLiteral,
 } from "../utils/is.js";
+import { parseUtility } from "../utils/parse.js";
 
 const messages = {
   unknownClass: "Unknown class '{{className}}'",
@@ -37,7 +38,12 @@ const rule: RuleModule<keyof typeof messages, []> = {
 
       const lineWithUnknown = lines.findIndex((line) => line.includes(unknown));
 
-      const columnOfUnknown = lines[lineWithUnknown].indexOf(unknown);
+      let columnOfUnknown = lines[lineWithUnknown].indexOf(unknown);
+
+      if (lines.length === 1) {
+        // If it's just one line, we need to add the column offset since the indentation is not included in the loc
+        columnOfUnknown = expression.loc.start.column + 1 + columnOfUnknown;
+      }
 
       context.report({
         node: expression,
@@ -105,6 +111,9 @@ const rule: RuleModule<keyof typeof messages, []> = {
   },
 };
 
+// group and peer don't generate css, just used for nesting
+const whitelisted = ["group", "peer"];
+
 const findUnknowns = (
   text: string,
   candidatesToCss: (classes: string[]) => (string | null)[],
@@ -118,7 +127,13 @@ const findUnknowns = (
   for (let i = 0; i < classes.length; i++) {
     const className = classes[i];
     const definition = css[i];
-    if (!definition) {
+
+    const utility = parseUtility(className);
+    if (whitelisted.some((c) => utility === c || utility.startsWith(`${c}/`))) {
+      continue;
+    }
+
+    if (definition === null) {
       unknowns.add(className);
     }
   }

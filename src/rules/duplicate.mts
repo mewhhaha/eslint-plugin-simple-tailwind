@@ -9,6 +9,7 @@ import {
   isNamed,
   isTemplateLiteral,
 } from "../utils/is.js";
+import { parsePrefix, parseUtility } from "../utils/parse.js";
 
 const messages = {
   duplicateClass:
@@ -42,7 +43,12 @@ const rule: RuleModule<keyof typeof messages, []> = {
         line.includes(className),
       );
 
-      const columnOfDuplicate = lines[lineWithDuplicate].indexOf(className);
+      let columnOfDuplicate = lines[lineWithDuplicate].indexOf(className);
+
+      if (lines.length === 1) {
+        // If it's just one line, we need to add the column offset since the indentation is not included in the loc
+        columnOfDuplicate = expression.loc.start.column + 1 + columnOfDuplicate;
+      }
 
       context.report({
         node: expression,
@@ -153,26 +159,6 @@ const findDuplicates = (
   }
 
   return duplicates;
-};
-
-// focus:hover:p-4 => "p-4"
-const parseUtility = (className: string) => {
-  // focus:hover:p-4
-
-  // ["focus", "hover", "p-4"]
-  const split = className.split(":");
-
-  // ["focus", "hover", "p-4"] => "p-4"
-  const utility = split.slice(-1)[0];
-
-  // "p-4" => { padding: 1rem; }
-  return utility;
-};
-
-// focus:hover:p-4 => "focus:hover"
-const parsePrefix = (className: string) => {
-  const split = className.split(":");
-  return split.slice(0, -1).join(":");
 };
 
 export default rule;

@@ -9,6 +9,7 @@
     "resolveJsonModule": true,
     "target": "ESNext",
     "strict": true,
+    "jsx": "react-jsx",
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
