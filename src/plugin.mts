@@ -1,5 +1,6 @@
-import multiline from "./rules/multiline.mjs";
+import formatting from "./rules/formatting.mjs";
 import duplicate from "./rules/duplicate.mjs";
+import unknown from "./rules/unknown.mjs";
 import { loadTailwind, tailwind } from "./load-tailwind.mjs";
 
 export { loadTailwind };
@@ -20,8 +21,9 @@ export { loadTailwind };
 export const plugin = (tw: tailwind) => {
   const plugin = {
     rules: {
-      multiline: multiline,
+      formatting: formatting,
       duplicate: duplicate,
+      unknown: unknown,
     },
   } as const;
 
@@ -52,8 +54,9 @@ export const plugin = (tw: tailwind) => {
         [name]: plugin,
       },
       rules: {
-        [`${name}/multiline`]: "warn",
+        [`${name}/formatting`]: "warn",
         [`${name}/duplicate`]: "error",
+        [`${name}/unknown`]: "warn",
       } satisfies PluginRules,
     },
   } as const;

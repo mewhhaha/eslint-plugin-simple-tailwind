@@ -11,8 +11,7 @@ import {
 } from "../utils/is.js";
 
 const messages = {
-  duplicateClass:
-    "Duplicate Tailwind class '{{className}}' found. Other occurrence: '{{original}}'",
+  unknownClass: "Unknown class '{{className}}'",
 };
 
 const rule: RuleModule<keyof typeof messages, []> = {
@@ -29,48 +28,43 @@ const rule: RuleModule<keyof typeof messages, []> = {
   create(context) {
     const settings = parseSettings(context);
 
-    const reportDuplicate = (
+    const reportUnknown = (
       expression: TSESTree.TemplateLiteral,
       text: string,
-      duplicate: `${string} ${string}`,
+      unknown: string,
     ) => {
-      const [className, original] = duplicate.split(" ");
-
       const lines = text.split("\n");
 
-      const lineWithDuplicate = lines.findIndex((line) =>
-        line.includes(className),
-      );
+      const lineWithUnknown = lines.findIndex((line) => line.includes(unknown));
 
-      const columnOfDuplicate = lines[lineWithDuplicate].indexOf(className);
+      const columnOfUnknown = lines[lineWithUnknown].indexOf(unknown);
 
       context.report({
         node: expression,
         loc: {
           start: {
-            line: expression.loc.start.line + lineWithDuplicate,
-            column: columnOfDuplicate,
+            line: expression.loc.start.line + lineWithUnknown,
+            column: columnOfUnknown,
           },
           end: {
-            line: expression.loc.start.line + lineWithDuplicate,
-            column: columnOfDuplicate + className.length,
+            line: expression.loc.start.line + lineWithUnknown,
+            column: columnOfUnknown + unknown.length,
           },
         },
-        messageId: "duplicateClass",
+        messageId: "unknownClass",
         data: {
-          className,
-          original,
+          className: unknown,
         },
       });
     };
 
-    const checkDuplicates = (expression: TSESTree.TemplateLiteral) => {
+    const checkUnknowns = (expression: TSESTree.TemplateLiteral) => {
       const quasis = expression.quasis;
       const text = quasis[0].value.raw;
 
-      const duplicates = findDuplicates(text, settings.candidatesToCss);
+      const duplicates = findUnknowns(text, settings.candidatesToCss);
       for (const duplicate of duplicates) {
-        reportDuplicate(expression, text, duplicate);
+        reportUnknown(expression, text, duplicate);
       }
     };
 
@@ -81,7 +75,7 @@ const rule: RuleModule<keyof typeof messages, []> = {
           invariant(hasTemplateLiteralExpression(jsxAttribute), "ignore");
 
           const expression = jsxAttribute.value.expression;
-          checkDuplicates(expression);
+          checkUnknowns(expression);
         } catch (error) {
           if (error instanceof Error && error.message === "ignore") {
             return;
@@ -96,7 +90,7 @@ const rule: RuleModule<keyof typeof messages, []> = {
 
           for (const arg of callExpression.arguments) {
             if (isTemplateLiteral(arg)) {
-              checkDuplicates(arg);
+              checkUnknowns(arg);
             }
           }
         } catch (error) {
@@ -111,68 +105,25 @@ const rule: RuleModule<keyof typeof messages, []> = {
   },
 };
 
-const findDuplicates = (
+const findUnknowns = (
   text: string,
   candidatesToCss: (classes: string[]) => (string | null)[],
 ) => {
-  const duplicates = new Set<`${string} ${string}`>();
+  const unknowns = new Set<string>();
   // Split into individual classes
   const classes = text.split(/\s+/).filter(Boolean);
 
-  // Track seen base utilities
-  const seenClasses = new Map<string, string>();
-
-  const css = candidatesToCss(classes.map(parseUtility));
+  const css = candidatesToCss(classes);
 
   for (let i = 0; i < classes.length; i++) {
     const className = classes[i];
     const definition = css[i];
     if (!definition) {
-      continue;
-    }
-
-    // focus:hover:p-4
-    const prefix = parsePrefix(className);
-
-    // Gets all the css keys that are being applied, and that's how we decide if something is "overlapping"
-    // { padding: 1rem } => ["padding"]
-    const matches = definition?.matchAll(/([\w-]+):/g);
-    // ["padding"] => "padding"
-
-    const keys = [...matches].map((m) => m[1]).join(" ");
-
-    // Just a unique identifier for the class based on its prefix and the css keys that are being applied
-    // "focus:hover padding"
-    const hash = prefix + " " + keys;
-    const duplicate = seenClasses.get(hash);
-    if (duplicate) {
-      duplicates.add(`${className} ${duplicate}`);
-    } else {
-      seenClasses.set(hash, className);
+      unknowns.add(className);
     }
   }
 
-  return duplicates;
-};
-
-// focus:hover:p-4 => "p-4"
-const parseUtility = (className: string) => {
-  // focus:hover:p-4
-
-  // ["focus", "hover", "p-4"]
-  const split = className.split(":");
-
-  // ["focus", "hover", "p-4"] => "p-4"
-  const utility = split.slice(-1)[0];
-
-  // "p-4" => { padding: 1rem; }
-  return utility;
-};
-
-// focus:hover:p-4 => "focus:hover"
-const parsePrefix = (className: string) => {
-  const split = className.split(":");
-  return split.slice(0, -1).join(":");
+  return unknowns;
 };
 
 export default rule;

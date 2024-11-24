@@ -65,27 +65,29 @@ const rule: RuleModule<keyof typeof messages, []> = {
       return sortedClasses;
     };
 
+    const checkFormatting = (arg: TSESTree.TemplateLiteral) => {
+      const quasis = arg.quasis;
+      const text = quasis[0].value.raw;
+      const indent = " ".repeat(arg.loc.start.column);
+
+      const classes = sortClasses(text);
+      const nextText = formatText(classes, {
+        indent,
+        printWidth: settings.printWidth,
+      });
+
+      if (text !== nextText) {
+        multilineWarning(nextText, arg);
+      }
+    };
+
     return {
-      JSXAttribute: function formatMultiline(jsxAttribute) {
+      JSXAttribute: function (jsxAttribute) {
         try {
           invariant(isAttribute(jsxAttribute, settings.attributes), "ignore");
           invariant(hasTemplateLiteralExpression(jsxAttribute), "ignore");
 
-          const expression = jsxAttribute.value.expression;
-          const quasis = expression.quasis;
-          const text = quasis[0].value.raw;
-          const indent = " ".repeat(jsxAttribute.loc.start.column);
-
-          const classes = sortClasses(text);
-
-          const nextText = formatText(classes, {
-            indent,
-            printWidth: settings.printWidth,
-          });
-
-          if (text !== nextText) {
-            multilineWarning(nextText, expression);
-          }
+          checkFormatting(jsxAttribute.value.expression);
         } catch (error) {
           if (error instanceof Error && error.message === "ignore") {
             return;
@@ -94,27 +96,14 @@ const rule: RuleModule<keyof typeof messages, []> = {
           throw error;
         }
       },
-      CallExpression: function formatMultilineCallExpression(callExpression) {
+      CallExpression: function (callExpression) {
         try {
           invariant(isNamed(callExpression, settings.callees), "ignore");
           invariant(hasArguments(callExpression), "ignore");
 
-          const args = callExpression.arguments.filter(isTemplateLiteral);
-
-          for (const arg of args) {
-            const quasis = arg.quasis;
-            const text = quasis[0].value.raw;
-            const indent = " ".repeat(arg.loc.start.column);
-
-            const classes = sortClasses(text);
-
-            const nextText = formatText(classes, {
-              indent,
-              printWidth: settings.printWidth,
-            });
-
-            if (text !== nextText) {
-              multilineWarning(nextText, arg);
+          for (const arg of callExpression.arguments) {
+            if (isTemplateLiteral(arg)) {
+              checkFormatting(arg);
             }
           }
         } catch (error) {

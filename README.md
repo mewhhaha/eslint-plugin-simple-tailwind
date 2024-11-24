@@ -23,7 +23,11 @@ export default [plugin(tw).configs.recommended];
 
 Here are the rules that are available in this plugin:
 
-### `multiline`
+- `formatting`
+- `duplicate`
+- `unknown`
+
+### `formatting`
 
 Adds a warning and a code action to format the `className` argument to a predictable style. Applies if it's using a template literal string in attributes `className` or `class` and if the callee is `cn`, `cx`, `className`, `clsx`, or `classNames`. This can be changed in the settings.
 
@@ -49,6 +53,10 @@ Adds a warning and a code action to format the `className` argument to a predict
 ### `duplicate`
 
 Adds an error if the `className` argument has duplicate classes.
+
+### `unknown`
+
+Adds a warning if the `className` argument has unknown classes.
 
 ## Settings
 
