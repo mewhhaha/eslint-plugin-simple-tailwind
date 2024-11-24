@@ -6,6 +6,12 @@ export const isTemplateLiteral = (
   return node.type === "TemplateLiteral";
 };
 
+export const isLiteral = (
+  node: TSESTree.Expression,
+): node is TSESTree.Literal => {
+  return node.type === "Literal";
+};
+
 export const hasArguments = (
   node: TSESTree.CallExpression,
 ): node is TSESTree.CallExpression & {
@@ -39,6 +45,27 @@ export const hasTemplateLiteralExpression = (
   }
 
   return true;
+};
+
+export const hasLiteralValue = (
+  node: TSESTree.JSXAttribute,
+): node is TSESTree.JSXAttribute & {
+  value: TSESTree.StringLiteral;
+} => {
+  return node.value?.type === "Literal";
+};
+
+export const hasJSXExpressionContainerLiteralValue = (
+  node: TSESTree.JSXAttribute,
+): node is TSESTree.JSXAttribute & {
+  value: TSESTree.JSXExpressionContainer & {
+    expression: TSESTree.Literal;
+  };
+} => {
+  return (
+    node.value?.type === "JSXExpressionContainer" &&
+    node.value.expression.type === "Literal"
+  );
 };
 
 export const isNamed = (node: TSESTree.CallExpression, callees: string[]) => {

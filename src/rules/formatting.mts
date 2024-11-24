@@ -214,6 +214,6 @@ const splitByPrintWidth = (classes: string[], printWidth: number) => {
 
 export default rule;
 
-export function bigSign(bigIntValue: bigint): number {
+const bigSign = (bigIntValue: bigint): number => {
   return Number(bigIntValue > 0n) - Number(bigIntValue < 0n);
-}
+};

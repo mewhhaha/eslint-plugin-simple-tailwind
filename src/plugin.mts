@@ -2,6 +2,7 @@ import formatting from "./rules/formatting.mjs";
 import duplicate from "./rules/duplicate.mjs";
 import unknown from "./rules/unknown.mjs";
 import { loadTailwind, tailwind } from "./load-tailwind.mjs";
+import preferMultiline from "./rules/prefer-multiline.mjs";
 
 export { loadTailwind };
 
@@ -24,6 +25,7 @@ export const plugin = (tw: tailwind) => {
       formatting: formatting,
       duplicate: duplicate,
       unknown: unknown,
+      "prefer-multiline": preferMultiline,
     },
   } as const;
 
@@ -57,6 +59,7 @@ export const plugin = (tw: tailwind) => {
         [`${name}/formatting`]: "warn",
         [`${name}/duplicate`]: "error",
         [`${name}/unknown`]: "warn",
+        [`${name}/prefer-multiline`]: "warn",
       } satisfies PluginRules,
     },
   } as const;

@@ -58,6 +58,10 @@ Adds an error if the `className` argument has duplicate classes.
 
 Adds a warning if the `className` argument has unknown classes.
 
+### `prefer-multiline`
+
+Adds a warning if the `className` argument is a string literal, and suggests to use a template literal string instead.
+
 ## Settings
 
 - `attributes`: The attributes to check for the `className` argument. (default: `["className", "class"]`)
