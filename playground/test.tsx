@@ -4,15 +4,17 @@ const cx = (className: string) => {
 
 <div
   className={`
-  group-last:bg-red-500
+    group-last:bg-red-500
 
-  peer
+    peer
   `}
 ></div>;
-cx(`
-   p-4
+cx(
+  `
+    p-4
 
-   focus:bg-red-500 focus:group
+    focus:bg-red-500 focus:group
 
-   group
-   `);
+    group
+  `,
+);

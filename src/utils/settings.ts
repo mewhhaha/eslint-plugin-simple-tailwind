@@ -32,6 +32,14 @@ export const parseSettings = <a extends string, b extends []>(
     printWidth = settings.printWidth;
   }
 
+  let extraIndentation = 2;
+  if (
+    "extraIndentation" in settings &&
+    typeof settings.extraIndentation === "number"
+  ) {
+    extraIndentation = settings.extraIndentation;
+  }
+
   let candidatesToCss = null;
   if (
     "candidatesToCss" in settings &&
@@ -60,5 +68,12 @@ export const parseSettings = <a extends string, b extends []>(
     "missing the getClassOrder function in simpleTailwind settings",
   );
 
-  return { callees, attributes, printWidth, getClassOrder, candidatesToCss };
+  return {
+    callees,
+    attributes,
+    printWidth,
+    getClassOrder,
+    candidatesToCss,
+    extraIndentation,
+  };
 };

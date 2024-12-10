@@ -79,6 +79,7 @@ const rule: RuleModule<keyof typeof messages, []> = {
       const nextText = formatText(classes, {
         indent,
         printWidth: settings.printWidth,
+        extraIndentation: " ".repeat(settings.extraIndentation),
       });
 
       if (text !== nextText) {
@@ -130,7 +131,11 @@ const prefix = (className: string) => {
 
 const formatText = (
   classes: string[],
-  { indent, printWidth }: { indent: string; printWidth: number },
+  {
+    indent,
+    printWidth,
+    extraIndentation,
+  }: { indent: string; printWidth: number; extraIndentation: string },
 ) => {
   /**
    * Group the classes by their prefix
@@ -150,7 +155,7 @@ const formatText = (
   const textClasses = groupedClasses
     .map((classes) => {
       return splitByPrintWidth(classes, printWidth - indent.length)
-        .map((row) => indent + row.join(" "))
+        .map((row) => extraIndentation + indent + row.join(" "))
         .join("\n");
     })
     .join("\n\n");
