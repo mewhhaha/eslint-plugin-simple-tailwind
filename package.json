@@ -1,6 +1,6 @@
 {
   "name": "@mewhhaha/eslint-plugin-simple-tailwind",
-  "version": "0.0.8",
+  "version": "0.0.9",
   "type": "module",
   "description": "",
   "scripts": {
@@ -37,6 +37,6 @@
     "typescript-eslint": "^8.15.0"
   },
   "peerDependencies": {
-    "tailwindcss": "4.0.0-beta.2"
+    "tailwindcss": ">=4.0.0-beta.2 || >=4.0.0"
   }
 }
