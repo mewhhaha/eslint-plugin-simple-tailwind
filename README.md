@@ -73,7 +73,7 @@ export default [
   plugin.configs.recommended,
   {
     settings: {
-      simpleTailwind: {
+      simpletailwindcss: {
         attributes: ["className", "class"],
         callees: ["cn", "cx", "className", "clsx", "classNames"],
         printWidth: 80,
