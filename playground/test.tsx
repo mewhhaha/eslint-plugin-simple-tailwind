@@ -4,6 +4,8 @@ const cx = (className: string) => {
 
 <div
   className={`
+    bg-gradient-to-r
+
     group-last:bg-red-500
 
     peer
