@@ -17,6 +17,8 @@
     "noEmit": false,
     "declaration": true,
     "outDir": "./dist",
-    "rootDir": "src"
+    "rootDir": "src",
+    "verbatimModuleSyntax": true,
+    "erasableSyntaxOnly": true
   }
 }

@@ -142,13 +142,13 @@ const findDuplicates = (
 
     // Gets all the css keys that are being applied, and that's how we decide if something is "overlapping"
     // { padding: 1rem } => ["padding"]
-    let matches = definition?.matchAll(/([\\w-]+):/g);
+    let matches = definition?.matchAll(/([\w-]+):/g);
     // ["padding"] => "padding"
     const keys = [...matches].map((m) => m[1]).join(" ");
 
-    // { 
-    //  :where(& > :not(:last-child)) { 
-    //  } 
+    // {
+    //  :where(& > :not(:last-child)) {
+    //  }
     // } => ["where(& > :not(:last-child)) {"]
     matches = definition?.matchAll(/^\s*:(.*)\s*{\s*$/gm);
 
@@ -156,7 +156,8 @@ const findDuplicates = (
 
     // Just a unique identifier for the class based on its prefix, css keys, and the first pseudo-selector line
     // e.g. "border-color", "divide-color :where(& > :not(:last-child))", "focus:hover padding"
-    const hash = [prefix, selectors, keys].filter(Boolean).join(" ");
+    const hash = prefix + " " + selectors + " " + keys;
+
     const duplicate = seenClasses.get(hash);
     if (duplicate) {
       duplicates.add(`${className} ${duplicate}`);

@@ -1,7 +1,7 @@
 import formatting from "./rules/formatting.mjs";
 import duplicate from "./rules/duplicate.mjs";
 import unknown from "./rules/unknown.mjs";
-import { loadTailwind, tailwind } from "./load-tailwind.mjs";
+import { loadTailwind, type tailwind } from "./load-tailwind.mjs";
 import preferMultiline from "./rules/prefer-multiline.mjs";
 
 export { loadTailwind };

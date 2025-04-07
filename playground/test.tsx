@@ -14,6 +14,8 @@ const cx = (className: string) => {
 
 <div className={`divide-white border-white`}></div>;
 
+<div className={`flex flex-col gap-2`}></div>;
+
 cx(
   `
     p-4

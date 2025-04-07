@@ -1,4 +1,4 @@
-import { RuleContext } from "@typescript-eslint/utils/ts-eslint";
+import type { RuleContext } from "@typescript-eslint/utils/ts-eslint";
 import { invariant } from "./invariant.js";
 
 export const parseSettings = <a extends string, b extends []>(
