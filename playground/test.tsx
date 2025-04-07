@@ -4,13 +4,16 @@ const cx = (className: string) => {
 
 <div
   className={`
-    bg-gradient-to-r
+    bg-gradient-to-br
 
     group-last:bg-red-500
 
     peer
   `}
 ></div>;
+
+<div className={`divide-white border-white`}></div>;
+
 cx(
   `
     p-4

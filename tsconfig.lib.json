@@ -1,5 +1,5 @@
 {
-  "include": ["playground"],
+  "include": ["src"],
   "compilerOptions": {
     "tsBuildInfoFile": "./node_modules/.cache/tsbuildinfo.lib.json",
     "composite": true,
@@ -11,11 +11,12 @@
     "resolveJsonModule": true,
     "target": "ESNext",
     "strict": true,
-    "jsx": "react-jsx",
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "allowSyntheticDefaultImports": true,
-    "noEmit": true,
-    "declaration": true
+    "noEmit": false,
+    "declaration": true,
+    "outDir": "./dist",
+    "rootDir": "src"
   }
 }

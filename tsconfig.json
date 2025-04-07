@@ -1,19 +1,11 @@
 {
-  "include": ["src"],
-  "compilerOptions": {
-    "lib": ["ESNext"],
-    "isolatedModules": true,
-    "esModuleInterop": true,
-    "module": "NodeNext",
-    "moduleResolution": "nodenext",
-    "resolveJsonModule": true,
-    "target": "ESNext",
-    "strict": true,
-    "skipLibCheck": true,
-    "forceConsistentCasingInFileNames": true,
-    "allowSyntheticDefaultImports": true,
-    "noEmit": false,
-    "declaration": true,
-    "outDir": "./dist"
-  }
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.lib.json"
+    },
+    {
+      "path": "./tsconfig.playground.json"
+    }
+  ]
 }
